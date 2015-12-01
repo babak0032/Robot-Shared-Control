@@ -20,12 +20,12 @@
 
 #define GRAPHICS 1
 
-#define DISTY	2	/* 0 trajectory, 1 part of trajectory, 2 moving */
+#define DISTY	0	/* 0 trajectory, 1 part of trajectory, 2 moving */
 
 #define NR 100		/* number of robots */
 #define L 10		/* number of positions: 0: center, 1: wall, 2: corner*/
 #define TT0 40000000L
-#define TM 46000000L
+#define TM 46000000L /* Seems like the amount of run time which will terminate the graphics */
 #define TRUE	1
 #define FALSE	0
 
@@ -73,7 +73,7 @@
 #define PLATE_UP                0
 #define PLATE_DOWN              1
 #define PLATE_LOCKED            2
-#define WINDOW_W                700
+#define WINDOW_W                700 /* Height and Weight of the Window */ 
 #define WINDOW_H                600
 #define FONT1                   "8x13bold" /* default font */ 
 #define FONT2                   "8x13"     /* if FONT1 doesn't exist */
@@ -113,11 +113,19 @@ double sc_y;
 double scx0;
 double scy0;
 
+// Adjust the size of the window and size of the robot
 double rw1,rw2;
 
 double w,a1,a2,aw,ac;
 
 FILE *pf[NR],*mf[NR];
+
+/*Robot paramters
+robot position: p_x, p_y
+robot velocity: v_x, v_y
+robot best local position: pbx, pby
+robot best global position: gbx, gby
+values of best local/global position: gf, pf */
 
 struct Robot {
 	int l_st,l_st_o;
@@ -175,6 +183,8 @@ void NetDisplay() {
 	/*DrawArc(3.0*scx0+sc_x*(double)N,scy0,sqrt(FEEL)*sc_y*(double)N,sqrt(FEEL)*sc_y*(double)N,0,23040);*/
 }
 
+
+/* takes a robot number (only matter for colour), and a robot struct pointer */
 void RobotDisplay(int r,struct Robot *robot) {
 
 	int x1,x2,y1,y2;
@@ -188,13 +198,16 @@ void RobotDisplay(int r,struct Robot *robot) {
 	Color(BLACK);
 	DrawArc(x1-rw2,y1-rw2,rw1,rw1,0,23040);
 #endif
-	Color(1+(5+r)%38);
+	Color(1+(5+0)%38);
+
+  //Drwa them (int x,  int y,  int width,  int height,  int startAngle,  int sweepAngle)
 	DrawArc(x2-rw2,y2-rw2,rw1,rw1,0,23040);
 	/*DrawLine(x1,y1,x2,y2);*/
 	robot->p_x1=robot->p_x;
 	robot->p_y1=robot->p_y;
 }
 
+//ignore
 void DrawPlate(int x,int y,int w,int h,u_char c,u_char state) {
 	h--; w--;
 	Color(c);
@@ -209,6 +222,7 @@ void DrawPlate(int x,int y,int w,int h,u_char c,u_char state) {
 	DrawLine(x+w,y+1,x+w,y+h);
 }
 
+//ignore
 void DrawButton(struct Button *but) {
 	short int x,y;
 	u_char    c;
@@ -242,6 +256,8 @@ void DrawWindow(struct Context *context) {
 	FillRectangle(WINDOW_H,WINDOW_H-120,WINDOW_W-1,WINDOW_H-1);
 
 	NetDisplay();
+
+  //NR: Number of robots, r: robot number (do it NR times)
 	for (r=0;r<NR;r++) {
 		RobotDisplay(r,robots[r]);
 	}
@@ -502,6 +518,8 @@ void InitGlobal() {
 	sp=0.0001;
 }
 
+
+//Care about this
 void InitRobot(int r,struct Robot *robot) {
 
 	robot->imax=0;
@@ -523,54 +541,70 @@ void InitRobot(int r,struct Robot *robot) {
 			robot->p_y=1.5*rr2+(1.0-rr1)*rr1*(0.5+(double)(r/((int)(sqrt((double)NR)))))/((double)((int)(sqrt((double)NR)))*rr1);
 		}
 	}
+
+  //Update Robot position x_1
 	robot->p_x1=robot->p_x+0.0*(drand48()-0.5);
 	robot->p_y1=robot->p_y+0.0*(drand48()-0.5);
 
+  //Initalize Robot velocity
 	robot->v_x=0.1*(drand48()-0.5);
 	robot->v_y=0.1*(drand48()-0.5);
 
+  //Best local and global position is the inital position
 	robot->pbx=robot->p_x;
 	robot->pby=robot->p_y;
 
 	robot->gbx=robot->p_x;
 	robot->gby=robot->p_y;
 
+  //Update Robot position
 	robot->p_x=0.5+0.25*(robot->p_x-0.5);
 	robot->p_y=0.5+0.25*(robot->p_y-0.5);
 }
 
-void RunRobot(long t,int my_r,struct Robot *robot) {
-	int r,oo,mrad=my_r;
+
+// Arguments: Robot number, and the pointer to the robot. For example (7, robot[7])
+
+void RunRobot(int my_r,struct Robot *robot) {
+	int r,mrad=my_r;
 	double rad,radmin=1.0e10;
 
 	/********************************************************************/
 	/****************   R O B O T    D Y N A M I C S  *******************/
 	/********************************************************************/
-	for (r=0;r<NR;r++) {
-		if (robots[r]->l_st==1) ;
-	}
-	oo=0;
-	for (r=0;r<NR;r++) {
-		if (r!=my_r) {
-			rad=(robot->p_x-robots[r]->p_x)*(robot->p_x-robots[r]->p_x)+(robot->p_y-robots[r]->p_y)*(robot->p_y-robots[r]->p_y);
-			if (rad<radmin) {
-				radmin=rad;
-				mrad=r;
-			}
 
-			if (rad<FEEL) {
-				robot->l_st+=1;
-			}
-		}
-	}
+  //
+	// for (r=0;r<NR;r++) {
+	// 	if (robots[r]->l_st==1) ;
+	// }
+
+
+	int oo=0;
+	// for (r=0;r<NR;r++) {
+	// 	if (r!=my_r) {
+	// 		rad=(robot->p_x-robots[r]->p_x)*(robot->p_x-robots[r]->p_x)+(robot->p_y-robots[r]->p_y)*(robot->p_y-robots[r]->p_y);
+	// 		if (rad<radmin) {
+	// 			radmin=rad;
+	// 			mrad=r;
+	// 		}
+
+	// 		if (rad<FEEL) {
+	// 			robot->l_st+=1;
+	// 		}
+	// 	}
+	// }
 	//printf("%g\n",radmin);
 
-	if ((robot->p_x<bou)||(robot->p_x>1.0-bou)||(robot->p_y<bou)||(robot->p_y>1.0-bou)) robot->l_st+=2;
-	else if (((robot->p_x<bou)&&(robot->p_y<bou))||((robot->p_x<bou)&&(robot->p_y>1.0-bou))||((robot->p_x>1.0-bou)&&(robot->p_y<bou))||((robot->p_x>1.0-bou)&&(robot->p_y>1.0-bou))) robot->l_st+=4;     
+	if ((robot->p_x<bou)||(robot->p_x>1.0-bou)||(robot->p_y<bou)||(robot->p_y>1.0-bou)) {
+    robot->l_st+=2;
+  }	else if (((robot->p_x<bou)&&(robot->p_y<bou))||((robot->p_x<bou)&&(robot->p_y>1.0-bou))||((robot->p_x>1.0-bou)&&(robot->p_y<bou))||((robot->p_x>1.0-bou)&&(robot->p_y>1.0-bou))) {
+    robot->l_st+=4;     
+  }
 
-
-	robot->v_x=w*robot->v_x+a1*drand48()*(robot->pbx-robot->p_x)+a2*drand48()*(robot->gbx-robot->p_x)+ac*(robot->p_x-robots[mrad]->p_x)/(radmin+0.0001);
-	robot->v_y=w*robot->v_y+a1*drand48()*(robot->pby-robot->p_y)+a2*drand48()*(robot->gby-robot->p_y)+ac*(robot->p_y-robots[mrad]->p_y)/(radmin+0.0001);
+  // Very important Information:
+  // v_x = v_x + 1.5*(random)*(pbx - x) + 1.5*(random)*(gbx - x) + 0.1*(x - x)
+	robot->v_x=w*robot->v_x+a1*drand48()*(robot->pbx-robot->p_x)+a2*drand48()*(robot->gbx-robot->p_x); //+ac*(robot->p_x-robots[mrad]->p_x)/(radmin+0.0001);
+	robot->v_y=w*robot->v_y+a1*drand48()*(robot->pby-robot->p_y)+a2*drand48()*(robot->gby-robot->p_y); //+ac*(robot->p_y-robots[mrad]->p_y)/(radmin+0.0001);
 
 	if (robot->p_x<rr2) robot->v_x-=aw*(robot->p_x-rr2);
 	if (robot->p_x>1.0-rr2) robot->v_x+=aw*(robot->p_x-(1.0-rr2));
@@ -684,7 +718,7 @@ int main() {
 			do { 
 
 				for (r=0;r<NR;r++) {
-					RunRobot(t,r,robots[r]);
+					RunRobot(r,robots[r]);
 				}
 				t++;
 				if (t>TM) {

@@ -21,7 +21,7 @@
 
 #define GRAPHICS 1
 
-#define DISTY	2	/* 0 trajectory, 1 part of trajectory, 2 moving */
+#define DISTY	0	/* 0 trajectory, 1 part of trajectory, 2 moving */
 
 #define NR 100		/* number of robots */
 #define L 10		/* number of positions: 0: center, 1: wall, 2: corner*/
@@ -200,6 +200,7 @@ void RobotDisplay(int r,struct Robot *robot) {
 	robot->p_y1=robot->p_y;
 }
 
+//Ignore
 void DrawPlate(int x,int y,int w,int h,u_char c,u_char state) {
 	h--; w--;
 	Color(c);
@@ -214,6 +215,7 @@ void DrawPlate(int x,int y,int w,int h,u_char c,u_char state) {
 	DrawLine(x+w,y+1,x+w,y+h);
 }
 
+//Ignore
 void DrawButton(struct Button *but) {
 	short int x,y;
 	u_char    c;

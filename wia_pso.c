@@ -20,9 +20,9 @@
 
 #define GRAPHICS 1
 
-#define DISTY	2	/* 0 trajectory, 1 part of trajectory, 2 moving */
+#define DISTY	2/* 0 trajectory, 1 part of trajectory, 2 moving */
 
-#define NR 100		/* number of robots */
+#define NR 200		/* number of robots */
 #define L 10		/* number of positions: 0: center, 1: wall, 2: corner*/
 #define TT0 40000000L
 #define TM 46000000L
