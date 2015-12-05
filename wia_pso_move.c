@@ -95,7 +95,7 @@
 #define P_D 0.01		/* robot radius or rather step length*/
 
 #define	RR1 0.02		/* robot diameter */
-#define	RR2 0.025		/* minimal wall distance */
+#define	RR2 0.015		/* minimal wall distance */
 #define FEEL (4.0*RR1*RR1)
 
 typedef unsigned char      boolean;
@@ -156,6 +156,7 @@ struct Context  *context;
 
 struct Robot **robots;
 
+// Draw the envronment What ever you want. Play with it. For where is good or bad, you should check the robot dynamics.
 #if GRAPHICS
 void NetDisplay() {
 	char x_text[50]="";

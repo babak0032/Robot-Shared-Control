@@ -20,14 +20,14 @@
 
 #define GRAPHICS 1
 
-#define DISTY	2	/* 0 trajectory, 1 part of trajectory, 2 moving */
+#define DISTY   2   /* 0 trajectory, 1 part of trajectory, 2 moving */
 
-#define NR 100		/* number of robots */
-#define L 10		/* number of positions: 0: center, 1: wall, 2: corner*/
+#define NR 12      /* number of robots */
+#define L 10        /* number of positions: 0: center, 1: wall, 2: corner*/
 #define TT0 40000000L
 #define TM 46000000L /* Seems like the amount of run time which will terminate the graphics */
-#define TRUE	1
-#define FALSE	0
+#define TRUE    1
+#define FALSE   0
 
 #define NUMBER_OF_COLORS        39
 #define BLACK                   0
@@ -86,15 +86,15 @@
 #define TEXT_BUF_SIZE           64
 
 
-#define QUIT_BUTTON             		0
-#define DISPLAY_RATE_UP_BUTTON 			1
-#define DISPLAY_RATE_DOWN_BUTTON 		2
-#define RUN_BUTTON              		3
+#define QUIT_BUTTON                     0
+#define DISPLAY_RATE_UP_BUTTON          1
+#define DISPLAY_RATE_DOWN_BUTTON        2
+#define RUN_BUTTON                      3
 
-#define P_D 0.01		/* robot radius or rather step length*/
+#define P_D 0.01        /* robot radius or rather step length*/
 
-#define	RR1 0.02		/* robot diameter */
-#define	RR2 0.015		/* minimal wall distance */
+#define RR1 0.02        /* robot diameter */
+#define RR2 0.015       /* minimal wall distance */
 #define FEEL (4.0*RR1*RR1)
 
 typedef unsigned char      boolean;
@@ -128,35 +128,35 @@ robot best global position: gbx, gby
 values of best local/global position: gf, pf */
 
 struct Robot {
-	int l_st,l_st_o;
-	int imax,imax_o;
-	double v_x,v_y;
-	double p_x,p_y;
-	double p_x1,p_y1;
-	double p_xo,p_yo;
-	double pbx,pby;
-	double gbx,gby;
-	double gf,pf;
+    int l_st,l_st_o;
+    int imax,imax_o;
+    double v_x,v_y;
+    double p_x,p_y;
+    double p_x1,p_y1;
+    double p_xo,p_yo;
+    double pbx,pby;
+    double gbx,gby;
+    double gf,pf;
 };
 
 #if GRAPHICS
 struct Context {
-	struct Button    *Buttons;
-	char             Comment[TEXT_BUF_SIZE];
+    struct Button    *Buttons;
+    char             Comment[TEXT_BUF_SIZE];
 };
 
 struct Button {
-	char         	*Text;
-	u_char       	State,Value;
-	short int     	X,Y,Width,Height;
-	struct Button 	*Next;
+    char            *Text;
+    u_char          State,Value;
+    short int       X,Y,Width,Height;
+    struct Button   *Next;
 };
 
-Display       	*display;
-Window        	window;
-GC            	gc;
-XColor        	color[NUMBER_OF_COLORS];
-Font          	font;
+Display         *display;
+Window          window;
+GC              gc;
+XColor          color[NUMBER_OF_COLORS];
+Font            font;
 struct Context  *context;
 
 #endif
@@ -165,111 +165,124 @@ struct Robot **robots;
 
 #if GRAPHICS
 void NetDisplay() {
-	char x_text[50]="";
+    char x_text[50]="";
 
-	Color(WHITE);
-	sprintf(x_text,"%ld     ",t);
-	DrawText(WINDOW_W-70,WINDOW_H-110,x_text);
+    Color(WHITE);
+    sprintf(x_text,"%ld     ",t);
+    DrawText(WINDOW_W-70,WINDOW_H-110,x_text);
+
+    Color(GREEN);
+    DrawRectangle(1,1,WINDOW_H-1,WINDOW_H-2);
+
+    Color(RED);
+    DrawRectangle((WINDOW_H-150)/2,100,(WINDOW_H-320)/2,4);
+    DrawRectangle((WINDOW_H+177)/2,(WINDOW_H-120)/2,4,(WINDOW_H-320)/2); // verical ones
+
+
+    Color(RED);
+    DrawRectangle((WINDOW_H-177)/2,(WINDOW_H-120)/2,4,(WINDOW_H-320)/2); // vertical ones
+    DrawRectangle((WINDOW_H-150)/2,(WINDOW_H+320)/2,(WINDOW_H-320)/2,4);
+
 
 	Color(GREEN);
-	DrawRectangle(1,1,WINDOW_H-1,WINDOW_H-2);
-  
+	DrawRectangle(4,350,(WINDOW_H-4)/2.5,(WINDOW_H-4)/2.5);
+      
 
-	//DrawRectangle(WINDOW_W-20,scy0,5,2.0*sqrt((double)FEEL)*sc_y*(double)N);
+    //DrawRectangle(WINDOW_W-20,scy0,5,2.0*sqrt((double)FEEL)*sc_y*(double)N);
 
-	//Color(RED);
-	//DrawRectangle(WINDOW_W-25,scy0+sqrt((double)FEEL)*sc_y*(double)N,15,rr2*sc_y*(double)N);
-	//DrawRectangle(WINDOW_W-25,scy0+(sqrt((double)FEEL)-rr2)*sc_y*(double)N,15,rr2*sc_y*(double)N);
+    //Color(RED);
+    //DrawRectangle(WINDOW_W-25,scy0+sqrt((double)FEEL)*sc_y*(double)N,15,rr2*sc_y*(double)N);
+    //DrawRectangle(WINDOW_W-25,scy0+(sqrt((double)FEEL)-rr2)*sc_y*(double)N,15,rr2*sc_y*(double)N);
 
-	/*DrawArc(3.0*scx0+sc_x*(double)N,scy0,sqrt(FEEL)*sc_y*(double)N,sqrt(FEEL)*sc_y*(double)N,0,23040);*/
+    /*DrawArc(3.0*scx0+sc_x*(double)N,scy0,sqrt(FEEL)*sc_y*(double)N,sqrt(FEEL)*sc_y*(double)N,0,23040);*/
 }
 
 
 /* takes a robot number (only matter for colour), and a robot struct pointer */
 void RobotDisplay(int r,struct Robot *robot) {
 
-	int x1,x2,y1,y2;
+    int x1,x2,y1,y2;
 
-	x2=(int)((double)WINDOW_H*robot->p_x);
-	y2=(int)((double)WINDOW_H*robot->p_y);
-	x1=(int)((double)WINDOW_H*robot->p_x1);
-	y1=(int)((double)WINDOW_H*robot->p_y1);
+    x2=(int)((double)WINDOW_H*robot->p_x);
+    y2=(int)((double)WINDOW_H*robot->p_y);
+    x1=(int)((double)WINDOW_H*robot->p_x1);
+    y1=(int)((double)WINDOW_H*robot->p_y1);
 
 #if DISTY*(DISTY-1)
-	Color(BLACK);
-	DrawArc(x1-rw2,y1-rw2,rw1,rw1,0,23040);
+    Color(BLACK);
+    DrawArc(x1-rw2,y1-rw2,rw1,rw1,0,23040);
 #endif
-	Color(1+(5+0)%38);
+    Color(1+(5+0)%38);
 
   //Drwa them (int x,  int y,  int width,  int height,  int startAngle,  int sweepAngle)
-	DrawArc(x2-rw2,y2-rw2,rw1,rw1,0,23040);
-	/*DrawLine(x1,y1,x2,y2);*/
-	robot->p_x1=robot->p_x;
-	robot->p_y1=robot->p_y;
+    DrawArc(x2-rw2,y2-rw2,rw1,rw1,0,23040);
+    /*DrawLine(x1,y1,x2,y2);*/
+    robot->p_x1=robot->p_x;
+    robot->p_y1=robot->p_y;
 }
 
 //ignore
 void DrawPlate(int x,int y,int w,int h,u_char c,u_char state) {
-	h--; w--;
-	Color(c);
-	FillRectangle(x+1,y+1,w-1,h-1);
-	if (state == PLATE_DOWN) Color(BLACK);
-	else Color(WHITE);
-	DrawLine(x,y,x,y+h-1);
-	DrawLine(x,y,x+w-1,y);
-	if (state == PLATE_DOWN) Color(WHITE);
-	else Color(BLACK);
-	DrawLine(x+1,y+h,x+w,y+h);
-	DrawLine(x+w,y+1,x+w,y+h);
+    h--; w--;
+    Color(c);
+    FillRectangle(x+1,y+1,w-1,h-1);
+    if (state == PLATE_DOWN) Color(BLACK);
+    else Color(WHITE);
+    DrawLine(x,y,x,y+h-1);
+    DrawLine(x,y,x+w-1,y);
+    if (state == PLATE_DOWN) Color(WHITE);
+    else Color(BLACK);
+    DrawLine(x+1,y+h,x+w,y+h);
+    DrawLine(x+w,y+1,x+w,y+h);
 }
 
 //ignore
 void DrawButton(struct Button *but) {
-	short int x,y;
-	u_char    c;
+    short int x,y;
+    u_char    c;
 
-	if (but->State == PLATE_UP) {
-		x = but->X + 4; 
-		y = but->Y + 13; 
-		c = GREY;
-	}
-	else {
-		x = but->X + 5; 
-		y = but->Y + 14; 
-		c = GREY_69;
-	}
-	DrawPlate(but->X,but->Y,but->Width,but->Height,c,but->State);
-	Color(BLACK);
-	DrawText(x,y,but->Text);
-	XSync(display,FALSE);
+    if (but->State == PLATE_UP) {
+        x = but->X + 4; 
+        y = but->Y + 13; 
+        c = GREY;
+    }
+    else {
+        x = but->X + 5; 
+        y = but->Y + 14; 
+        c = GREY_69;
+    }
+    DrawPlate(but->X,but->Y,but->Width,but->Height,c,but->State);
+    Color(BLACK);
+    DrawText(x,y,but->Text);
+    XSync(display,FALSE);
 }
 
 void DrawWindow(struct Context *context) {
 
-	struct Button *but;
-	int r;
+    struct Button *but;
+    int r;
 
-	XSync(display,1);
+    XSync(display,1);
 
-	/*DrawPlate(0,0,WINDOW_W-1,WINDOW_H-1,WHITE,PLATE_UP);
-	DrawPlate(0,0,WINDOW_W-1,WINDOW_H-1,BLACK,PLATE_UP);*/
-	Color(BLACK);
-	FillRectangle(WINDOW_H,WINDOW_H-120,WINDOW_W-1,WINDOW_H-1);
+    /*DrawPlate(0,0,WINDOW_W-1,WINDOW_H-1,WHITE,PLATE_UP);
+    DrawPlate(0,0,WINDOW_W-1,WINDOW_H-1,BLACK,PLATE_UP);*/
+    Color(BLACK);
+    FillRectangle(WINDOW_H,WINDOW_H-120,WINDOW_W-1,WINDOW_H-1);
 
-	NetDisplay();
+    NetDisplay();
 
   //NR: Number of robots, r: robot number (do it NR times)
-	for (r=0;r<NR;r++) {
-		RobotDisplay(r,robots[r]);
-	}
+    for (r=0;r<NR;r++) {
+        RobotDisplay(r,robots[r]);
+    }
 
-	but = context->Buttons;;
-	while (but) {
-		DrawButton(but);
-		but = but->Next;
-	}
+    but = context->Buttons;;
+    while (but) {
+        DrawButton(but);
+        but = but->Next;
+    }
 
-	XSync(display,0);
+    XSync(display,0);
 }
 
 struct Button *PressButton(struct Context *context)
@@ -322,7 +335,7 @@ struct Button *PressButton(struct Context *context)
             but->State = PLATE_UP;
             DrawButton(but);
           }
-	}
+    }
        }
        break;
       case MotionNotify:
@@ -491,269 +504,279 @@ void OpenGraphics() {
 }
 
 void CloseGraphics() {
-	XCloseDisplay(display);
+    XCloseDisplay(display);
 }
 #endif
 
 void InitGlobal() {
-	t=0L;
-	p_d=P_D;
-	bou=-0.21;
-	rr1=RR1;
-	rr2=RR2;
+    t=0L;
+    p_d=P_D;
+    bou=-0.21;
+    rr1=RR1;
+    rr2=RR2;
 
-	sc_x=(double)WINDOW_H;
-	sc_y=(double)WINDOW_H;
-	scx0=(double)WINDOW_H;
-	scy0=(double)WINDOW_H;
-	rw1=WINDOW_H*RR1;
-	rw2=WINDOW_H*RR2;
+    sc_x=(double)WINDOW_H;
+    sc_y=(double)WINDOW_H;
+    scx0=(double)WINDOW_H;
+    scy0=(double)WINDOW_H;
+    rw1=WINDOW_H*RR1;
+    rw2=WINDOW_H*RR2;
 
-	w=0.9;
-	a1=1.5;
-	a2=1.5;
+    w=0.9;
+    a1=1.5;
+    a2=1.5;
 
-	aw=0.9;
-	ac=0.01;
+    aw=0.9;
+    ac=0.01;
 
-	sp=0.0001;
+    sp=0.0001;
 }
 
 
 //Care about this
 void InitRobot(int r,struct Robot *robot) {
 
-	robot->imax=0;
-	robot->l_st=0;
+    robot->imax=0;
+    robot->l_st=0;
 
-	/*robot->p_x=0.5+0.5*(drand48()-0.5);
-	robot->p_y=0.5+0.5*(drand48()-0.5);*/
+    /*robot->p_x=0.5+0.5*(drand48()-0.5);
+    robot->p_y=0.5+0.5*(drand48()-0.5);*/
 
-	if (NR<4) {
-		 robot->p_x=1.5*rr2+(1.0-rr1)*rr1*(0.5+(double)(r%NR))/((double)NR*rr1);
-		 robot->p_y=0.5;
-	}
-	else {
-		robot->p_x=1.5*rr2+(1.0-rr1)*rr1*(0.5+(double)(r%(int)(sqrt((double)NR))))/((double)((int)(sqrt((double)NR)))*rr1);
-		if ((int)(sqrt((double)NR))*(int)(sqrt((double)NR))!=NR) { 
-			robot->p_y=1.5*rr2+(1.0-rr1)*rr1*(0.5+(double)(r/((int)(sqrt((double)NR)))))/((double)((int)(sqrt((double)NR)))*rr1)*(1.0-1.5/((double)((int)(sqrt((double)NR)))));
-		}
-		else {
-			robot->p_y=1.5*rr2+(1.0-rr1)*rr1*(0.5+(double)(r/((int)(sqrt((double)NR)))))/((double)((int)(sqrt((double)NR)))*rr1);
-		}
-	}
+    if (NR<4) {
+         robot->p_x=1.5*rr2+(1.0-rr1)*rr1*(0.5+(double)(r%NR))/((double)NR*rr1);
+         robot->p_y=0.5;
+    }
+    else {
+        robot->p_x=1.5*rr2+(1.0-rr1)*rr1*(0.5+(double)(r%(int)(sqrt((double)NR))))/((double)((int)(sqrt((double)NR)))*rr1);
+        if ((int)(sqrt((double)NR))*(int)(sqrt((double)NR))!=NR) { 
+            robot->p_y=1.5*rr2+(1.0-rr1)*rr1*(0.5+(double)(r/((int)(sqrt((double)NR)))))/((double)((int)(sqrt((double)NR)))*rr1)*(1.0-1.5/((double)((int)(sqrt((double)NR)))));
+        }
+        else {
+            robot->p_y=1.5*rr2+(1.0-rr1)*rr1*(0.5+(double)(r/((int)(sqrt((double)NR)))))/((double)((int)(sqrt((double)NR)))*rr1);
+        }
+    }
 
   //Update Robot position x_1
-	robot->p_x1=robot->p_x+0.0*(drand48()-0.5);
-	robot->p_y1=robot->p_y+0.0*(drand48()-0.5);
+    robot->p_x1=robot->p_x+0.0*(drand48()-0.5);
+    robot->p_y1=robot->p_y+0.0*(drand48()-0.5);
 
   //Initalize Robot velocity
-	robot->v_x=0.1*(drand48()-0.5);
-	robot->v_y=0.1*(drand48()-0.5);
+    robot->v_x=0.1*(drand48()-0.5);
+    robot->v_y=0.1*(drand48()-0.5);
 
   //Best local and global position is the inital position
-	robot->pbx=robot->p_x;
-	robot->pby=robot->p_y;
+    robot->pbx=robot->p_x;
+    robot->pby=robot->p_y;
 
-	robot->gbx=robot->p_x;
-	robot->gby=robot->p_y;
+    robot->gbx=robot->p_x;
+    robot->gby=robot->p_y;
 
   //Update Robot position
-	robot->p_x=0.5+0.25*(robot->p_x-0.5);
-	robot->p_y=0.5+0.25*(robot->p_y-0.5);
+    robot->p_x=0.5+0.25*(robot->p_x-0.5);
+    robot->p_y=0.5+0.25*(robot->p_y-0.5);
 }
 
 
 // Arguments: Robot number, and the pointer to the robot. For example (7, robot[7])
 
 void RunRobot(int my_r,struct Robot *robot) {
-	int r,mrad=my_r;
-	double rad,radmin=1.0e10;
+  int r,rg,mrad=my_r;
+  double rad,radmin=1.0e10;
 
-	/********************************************************************/
-	/****************   R O B O T    D Y N A M I C S  *******************/
-	/********************************************************************/
+  /********************************************************************/
+  /****************   R O B O T    D Y N A M I C S  *******************/
+  /********************************************************************/
+  for (r=0;r<NR;r++) {
+    rg=(int)(drand48()*(double)NR);
+    if (((robots[rg]->p_x<0.33) && (robots[rg]->p_y>0.6)) && ((robot->p_x>0.33) || (robot->p_y<0.6))) {
+      robot->gbx=robots[rg]->p_x;
+      robot->gby=robots[rg]->p_y;
+      break;
+    }
+    else {
+      robot->gbx=robot->p_x;
+      robot->gby=robot->p_y;
+    }
+  }
+  if (robot->p_x<0.33) {
+    robot->pbx=robot->p_x;
+    robot->pby=robot->p_y;
+  }
+  else {
+    robot->pbx=robot->p_x;
+    robot->pby=robot->p_y;
+  }
+  int oo=0;
+  for (r=0;r<NR;r++) {
+    if (r!=my_r) {
+      rad=(robot->p_x-robots[r]->p_x)*(robot->p_x-robots[r]->p_x)+(robot->p_y-robots[r]->p_y)*(robot->p_y-robots[r]->p_y);
+      if (rad<radmin) {
+        radmin=rad;
+        mrad=r;
+      }
 
-  //
-	// for (r=0;r<NR;r++) {
-	// 	if (robots[r]->l_st==1) ;
-	// }
+      if (rad<FEEL) {
+        robot->l_st+=1;
+      }
+    }
+  }
+  //printf("%g\n",radmin);
+
+  if ((robot->p_x<bou)||(robot->p_x>1.0-bou)||(robot->p_y<bou)||(robot->p_y>1.0-bou)) robot->l_st+=2;
+  else if (((robot->p_x<bou)&&(robot->p_y<bou))||((robot->p_x<bou)&&(robot->p_y>1.0-bou))||((robot->p_x>1.0-bou)&&(robot->p_y<bou))||((robot->p_x>1.0-bou)&&(robot->p_y>1.0-bou))) robot->l_st+=4;     
 
 
-	int oo=0;
-	// for (r=0;r<NR;r++) {
-	// 	if (r!=my_r) {
-	// 		rad=(robot->p_x-robots[r]->p_x)*(robot->p_x-robots[r]->p_x)+(robot->p_y-robots[r]->p_y)*(robot->p_y-robots[r]->p_y);
-	// 		if (rad<radmin) {
-	// 			radmin=rad;
-	// 			mrad=r;
-	// 		}
+  robot->v_x=w*robot->v_x+a1*drand48()*(robot->pbx-robot->p_x)+a2*drand48()*(robot->gbx-robot->p_x)+ac*(robot->p_x-robots[mrad]->p_x)/(radmin+0.0001);
+  robot->v_y=w*robot->v_y+a1*drand48()*(robot->pby-robot->p_y)+a2*drand48()*(robot->gby-robot->p_y)+ac*(robot->p_y-robots[mrad]->p_y)/(radmin+0.0001);
 
-	// 		if (rad<FEEL) {
-	// 			robot->l_st+=1;
-	// 		}
-	// 	}
-	// }
-	//printf("%g\n",radmin);
+  if (robot->p_x<rr2) robot->v_x-=aw*(robot->p_x-rr2);
+  if (robot->p_x>1.0-rr2) robot->v_x+=aw*(robot->p_x-(1.0-rr2));
+  if (robot->p_y<rr2) robot->v_y-=aw*(robot->p_y-rr2);
+  if (robot->p_y>1.0-rr2) robot->v_y+=aw*(robot->p_y-(1.0-rr2));
 
-	if ((robot->p_x<bou)||(robot->p_x>1.0-bou)||(robot->p_y<bou)||(robot->p_y>1.0-bou)) {
-    robot->l_st+=2;
-  }	else if (((robot->p_x<bou)&&(robot->p_y<bou))||((robot->p_x<bou)&&(robot->p_y>1.0-bou))||((robot->p_x>1.0-bou)&&(robot->p_y<bou))||((robot->p_x>1.0-bou)&&(robot->p_y>1.0-bou))) {
-    robot->l_st+=4;     
+  robot->p_xo=robot->p_x;
+  robot->p_yo=robot->p_y;
+
+  robot->p_x+=sp*robot->v_x;
+  if ((fabs(robot->p_y-0.5)>0.1)&&(((robot->p_xo<0.32)&&(robot->p_x>0.38))||((robot->p_xo>0.32)&&(robot->p_x<0.38))))
+  robot->p_x=robot->p_xo;
+  robot->p_y+=sp*robot->v_y;
+
+  oo=0;
+  for (r=0;r<NR;r++) {
+    if (r!=my_r) {
+      rad=(robot->p_x-robots[r]->p_x)*(robot->p_x-robots[r]->p_x)+(robot->p_y-robots[r]->p_y)*(robot->p_y-robots[r]->p_y);
+      if (rad<rr1*rr1) {
+        robot->p_x=robot->p_xo;
+        robot->p_y=robot->p_yo;
+        oo=1;
+        break;
+      }
+    }
+  }
+  if (oo==0) {
+    if (robot->p_x<rr2) robot->p_x=rr2;
+    if (robot->p_x>1.0-rr2) robot->p_x=1.0-rr2;
+    if (robot->p_y<rr2) robot->p_y=rr2;
+    if (robot->p_y>1.0-rr2) robot->p_y=1.0-rr2;
   }
 
-  // Very important Information:
-  // v_x = v_x + 1.5*(random)*(pbx - x) + 1.5*(random)*(gbx - x) + 0.1*(x - x)
-	robot->v_x=w*robot->v_x+a1*drand48()*(robot->pbx-robot->p_x)+a2*drand48()*(robot->gbx-robot->p_x); //+ac*(robot->p_x-robots[mrad]->p_x)/(radmin+0.0001);
-	robot->v_y=w*robot->v_y+a1*drand48()*(robot->pby-robot->p_y)+a2*drand48()*(robot->gby-robot->p_y); //+ac*(robot->p_y-robots[mrad]->p_y)/(radmin+0.0001);
-
-  // This is to make sure you stay in a boundary I think. RR2 is the size of the square of the envronment. These if statements will reverse the speed if you're outsidethe box
-	if (robot->p_x<rr2) robot->v_x-=aw*(robot->p_x-rr2);
-	if (robot->p_x>1.0-rr2) robot->v_x+=aw*(robot->p_x-(1.0-rr2));
-	if (robot->p_y<rr2) robot->v_y-=aw*(robot->p_y-rr2);
-	if (robot->p_y>1.0-rr2) robot->v_y+=aw*(robot->p_y-(1.0-rr2));
-
-	robot->p_xo=robot->p_x;
-	robot->p_yo=robot->p_y;
-
-	robot->p_x+=sp*robot->v_x;
-	robot->p_y+=sp*robot->v_y;
-
-	// oo=0;
-	// for (r=0;r<NR;r++) {
-	// 	if (r!=my_r) {
-	// 		rad=(robot->p_x-robots[r]->p_x)*(robot->p_x-robots[r]->p_x)+(robot->p_y-robots[r]->p_y)*(robot->p_y-robots[r]->p_y);
-	// 		if (rad<rr1*rr1) {
-	// 			robot->p_x=robot->p_xo;
-	// 			robot->p_y=robot->p_yo;
-	// 			oo=1;
-	// 			break;
-	// 		}
-	// 	}
-	// }
-	/*if (oo==0) {
-		if (robot->p_x<rr2) robot->p_x=robot->p_xo;
-		if (robot->p_x>1.0-rr2) robot->p_x=robot->p_xo;
-		if (robot->p_y<rr2) robot->p_y=robot->p_yo;
-		if (robot->p_y>1.0-rr2) robot->p_y=robot->p_yo;
-	}*/
-
-	robot->l_st_o=robot->l_st;
-	robot->l_st=0;
+  robot->l_st_o=robot->l_st;
+  robot->l_st=0;
 }
 
 void InitFiles() {
-	int r;
-	char ffn[10];
-	for (r=0;r<NR;r++) {
-		sprintf(ffn,"pf%d",r);
-		if((pf[r]=fopen(ffn,"wt"))==NULL) printf("couldn't open output file\n");
-		sprintf(ffn,"mf%d",r);
-		if((mf[r]=fopen(ffn,"wt"))==NULL) printf("couldn't open output file\n");
-	}
+    int r;
+    char ffn[10];
+    for (r=0;r<NR;r++) {
+        sprintf(ffn,"pf%d",r);
+        if((pf[r]=fopen(ffn,"wt"))==NULL) printf("couldn't open output file\n");
+        sprintf(ffn,"mf%d",r);
+        if((mf[r]=fopen(ffn,"wt"))==NULL) printf("couldn't open output file\n");
+    }
 }
 
 void EvalRobot(long t, int r,struct Robot *robot) {
 
-	/********************************************************************/
-	/********************   E V A L U A T I O N   ***********************/
-	/********************************************************************/
+    /********************************************************************/
+    /********************   E V A L U A T I O N   ***********************/
+    /********************************************************************/
 
-	if (t>=TT0) fprintf(pf[r],"%ld %g %g\n",t,robot->p_x,robot->p_y);
+    if (t>=TT0) fprintf(pf[r],"%ld %g %g\n",t,robot->p_x,robot->p_y);
 }
 
 int main() {
 
-	int r;
+    int r;
 
 #if GRAPHICS
-	struct Button *but,*button;
-	boolean quit=FALSE;
-	context = (struct Context *)malloc(sizeof(struct Context));
+    struct Button *but,*button;
+    boolean quit=FALSE;
+    context = (struct Context *)malloc(sizeof(struct Context));
 
-	but= context->Buttons= CreateButton(RUN_BUTTON,"RUN/STOP",WINDOW_W-50,WINDOW_H-90);
-	but= but->Next=CreateButton(DISPLAY_RATE_UP_BUTTON,"+",WINDOW_W-40,WINDOW_H-60);
-	but= but->Next=CreateButton(DISPLAY_RATE_DOWN_BUTTON,"-",WINDOW_W-60,WINDOW_H-60);
-	but= but->Next=CreateButton(QUIT_BUTTON,"QUIT",WINDOW_W-50,WINDOW_H-30);
+    but= context->Buttons= CreateButton(RUN_BUTTON,"RUN/STOP",WINDOW_W-50,WINDOW_H-90);
+    but= but->Next=CreateButton(DISPLAY_RATE_UP_BUTTON,"+",WINDOW_W-40,WINDOW_H-60);
+    but= but->Next=CreateButton(DISPLAY_RATE_DOWN_BUTTON,"-",WINDOW_W-60,WINDOW_H-60);
+    but= but->Next=CreateButton(QUIT_BUTTON,"QUIT",WINDOW_W-50,WINDOW_H-30);
 
-	display_rate=1L;
+    display_rate=1L;
 
-	OpenGraphics();
+    OpenGraphics();
 #endif
 
-	robots = (struct Robot **)malloc(NR*sizeof(struct Robot*));
+    robots = (struct Robot **)malloc(NR*sizeof(struct Robot*));
 
-	for (r=0;r<NR;r++) {
-		robots[r] = (struct Robot *)malloc(sizeof(struct Robot));
-	}
+    for (r=0;r<NR;r++) {
+        robots[r] = (struct Robot *)malloc(sizeof(struct Robot));
+    }
 
-	/*InitFiles();*/
-	InitGlobal();
+    /*InitFiles();*/
+    InitGlobal();
 
-	for (r=0;r<NR;r++) {
-		InitRobot(r,robots[r]);
-	}
+    for (r=0;r<NR;r++) {
+        InitRobot(r,robots[r]);
+    }
 
 #if GRAPHICS
-	while(quit == FALSE) {
-		button=PressButton(context);
-		switch(button->Value) {
-		case QUIT_BUTTON:  
-			quit = TRUE;
-			break;
-		case DISPLAY_RATE_UP_BUTTON:
-			display_rate*=10L;
-			if (display_rate>100000L) display_rate=100000L;
-			display_rate-=display_rate%10L;
-			if (display_rate<1L) display_rate=1L;
-			DrawWindow(context);
-			break;
-		case DISPLAY_RATE_DOWN_BUTTON:
-			if (display_rate>9L) display_rate/=10L;
-			display_rate-=display_rate%10L;
-			if (display_rate<1L) display_rate=1L;
-			DrawWindow(context);
-			break;
+    while(quit == FALSE) {
+        button=PressButton(context);
+        switch(button->Value) {
+        case QUIT_BUTTON:  
+            quit = TRUE;
+            break;
+        case DISPLAY_RATE_UP_BUTTON:
+            display_rate*=10L;
+            if (display_rate>100000L) display_rate=100000L;
+            display_rate-=display_rate%10L;
+            if (display_rate<1L) display_rate=1L;
+            DrawWindow(context);
+            break;
+        case DISPLAY_RATE_DOWN_BUTTON:
+            if (display_rate>9L) display_rate/=10L;
+            display_rate-=display_rate%10L;
+            if (display_rate<1L) display_rate=1L;
+            DrawWindow(context);
+            break;
 
-		case RUN_BUTTON:
+        case RUN_BUTTON:
 #endif
-			do { 
+            do { 
 
-				for (r=0;r<NR;r++) {
-					RunRobot(r,robots[r]);
-				}
-				t++;
-				if (t>TM) {
+                for (r=0;r<NR;r++) {
+                    RunRobot(r,robots[r]);
+                }
+                t++;
+                if (t>TM) {
 #if GRAPHICS
-					CloseGraphics();
+                    CloseGraphics();
 #endif
-					return(1);
-					exit(1);
-				}
+                    return(1);
+                    exit(1);
+                }
 
 #if GRAPHICS
-				if (t%display_rate==0L) {
-					DrawWindow(context);
+                if (t%display_rate==0L) {
+                    DrawWindow(context);
 #if DISTY*(DISTY-2)
-					if (t%(250L*display_rate)==0L) {
-						DrawPlate(0,0,WINDOW_W-1,WINDOW_H-1,BLACK,PLATE_UP);
-					}
+                    if (t%(250L*display_rate)==0L) {
+                        DrawPlate(0,0,WINDOW_W-1,WINDOW_H-1,BLACK,PLATE_UP);
+                    }
 #endif
-				}
+                }
 #endif
-			}
+            }
 #if GRAPHICS
-			while (UnpressButton(context,button)==FALSE); 
-			break;
+            while (UnpressButton(context,button)==FALSE); 
+            break;
 #else
-			while (TRUE); 
+            while (TRUE); 
 #endif
 #if GRAPHICS
-		}
-		button->State = PLATE_UP;
-	}
+        }
+        button->State = PLATE_UP;
+    }
 
-	CloseGraphics();
+    CloseGraphics();
 #endif
-	return(1);
+    return(1);
 }
