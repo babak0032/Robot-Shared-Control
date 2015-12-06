@@ -22,7 +22,7 @@
 
 #define DISTY   2   /* 0 trajectory, 1 part of trajectory, 2 moving */
 
-#define NR 15      /* number of robots */
+#define NR 40      /* number of robots */
 #define L 10        /* number of positions: 0: center, 1: wall, 2: corner*/
 #define TT0 40000000L
 #define TM 46000000L /* Seems like the amount of run time which will terminate the graphics */
@@ -175,17 +175,14 @@ void NetDisplay() {
     DrawRectangle(1,1,WINDOW_H-1,WINDOW_H-2);
 
     Color(RED);
-    DrawRectangle((WINDOW_H*2)/5,(WINDOW_H)/3,(WINDOW_H)/5,4);   // horizontal 
-    DrawRectangle((WINDOW_H*2)/5,(WINDOW_H*2)/3,(WINDOW_H)/5,4);
+    DrawRectangle((WINDOW_H)/3,(WINDOW_H)/3,(WINDOW_H)/3,4);   // horizontal 
+    DrawRectangle((WINDOW_H)/3,1,4,(WINDOW_H)/3); // vertical
+    DrawRectangle((WINDOW_H*2)/3,1,4,(WINDOW_H)/3); // vertical 
 
     Color(RED);
-    DrawRectangle((WINDOW_H)/3,(WINDOW_H*2)/5,4,(WINDOW_H)/5); // vertical 
-    DrawRectangle((WINDOW_H*2)/3,(WINDOW_H*2)/5,4,(WINDOW_H)/5); // verical
-
-
-	  Color(GREEN);
-	  DrawRectangle(4,350,(WINDOW_H-4)/2.5,(WINDOW_H-4)/2.5);
-      
+    DrawRectangle((WINDOW_H)/3,(WINDOW_H*2)/3,(WINDOW_H)/3,4);   // horizontal 
+    DrawRectangle((WINDOW_H)/3,(WINDOW_H*2)/3,4,(WINDOW_H)/3); // vertical
+    DrawRectangle((WINDOW_H*2)/3,(WINDOW_H*2)/3,4,(WINDOW_H)/3); // vertical      
 
     //DrawRectangle(WINDOW_W-20,scy0,5,2.0*sqrt((double)FEEL)*sc_y*(double)N);
 
@@ -571,8 +568,8 @@ void InitRobot(int r,struct Robot *robot) {
     robot->gby=robot->p_y;
 
   //Update Robot position
-    robot->p_x=0.5+0.25*(robot->p_x-0.5);
-    robot->p_y=0.5+0.25*(robot->p_y-0.5);
+    robot->p_x=0.5+0.25*(robot->p_x-1.99);
+    robot->p_y=0.5+0.5*(robot->p_y-0.5);
 }
 
 
@@ -636,23 +633,30 @@ void RunRobot(int my_r,struct Robot *robot) {
   robot->p_xo=robot->p_x;
   robot->p_yo=robot->p_y;
 
-  // When going in x-axis direction is fucked up
   robot->p_x+=sp*robot->v_x;
   if ((fabs(robot->p_y-0.5)<0.1)&&(((robot->p_xo<0.37)&&(robot->p_x>0.29))||((robot->p_xo>0.37)&&(robot->p_x<0.29)))) {
   robot->p_x=robot->p_xo;
+  robot->p_y+=sp*robot->v_y;
   } 
-  if ((fabs(robot->p_y-0.5)<0.1)&&(((robot->p_xo<0.70)&&(robot->p_x>0.62))||((robot->p_xo>0.70)&&(robot->p_x<0.62)))) {
-  robot->p_x=robot->p_xo;
-  } 
-
-  // When going in y-axis direction is fucked up
   robot->p_y+=sp*robot->v_y;
   if ((fabs(robot->p_x-0.5)<0.1)&&(((robot->p_yo<0.70)&&(robot->p_y>0.62))||((robot->p_yo>0.70)&&(robot->p_y<0.62)))) {
-  robot->p_y=robot->p_yo; 
+  robot->p_y=robot->p_yo;
+  robot->p_x+=sp*robot->v_x; 
   }
+  robot->p_y-=sp*robot->v_y;
   if ((fabs(robot->p_x-0.5)<0.1)&&(((robot->p_yo<0.37)&&(robot->p_y>0.29))||((robot->p_yo>0.37)&&(robot->p_y<0.29)))) {
   robot->p_y=robot->p_yo;
+  robot->p_x-=sp*robot->v_x;
   }
+  robot->p_x-=sp*robot->v_x;
+  if ((fabs(robot->p_y-0.5)<0.1)&&(((robot->p_xo<0.70)&&(robot->p_x>0.62))||((robot->p_xo>0.70)&&(robot->p_x<0.62)))) {
+  robot->p_x=robot->p_xo;
+  robot->p_y-=sp*robot->v_y;
+  } 
+  // } else if ((fabs(robot->p_y-0.5)<0.1)&&(((robot->p_xo<0.70)&&(robot->p_x>0.62))||((robot->p_xo>0.70)&&(robot->p_x<0.62)))) {
+  // robot->p_x=robot->p_xo;
+  // robot->p_y+=sp*robot->v_y;
+  // }
 
   oo=0;
   for (r=0;r<NR;r++) {

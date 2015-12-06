@@ -73,7 +73,7 @@
 #define PLATE_UP                0
 #define PLATE_DOWN              1
 #define PLATE_LOCKED            2
-#define WINDOW_W                700
+#define WINDOW_W                900
 #define WINDOW_H                600
 #define FONT1                   "8x13bold" /* default font */ 
 #define FONT2                   "8x13"     /* if FONT1 doesn't exist */
@@ -166,9 +166,10 @@ void NetDisplay() {
 	Color(GREEN);
 	DrawRectangle(1,1,WINDOW_H-1,WINDOW_H-2);
 
+  // Why Height is used in the position for x instead of Width? Because it is 700*600 and it is actually 600*600
 	Color(RED);
-	DrawRectangle((WINDOW_H-4)/2,1,4,(WINDOW_H-120)/2);
-	DrawRectangle((WINDOW_H-4)/2,(WINDOW_H+120)/2,4,(WINDOW_H-124)/2);
+	DrawRectangle((WINDOW_H-0)/2,1,4,(WINDOW_H-120)/2);
+	DrawRectangle((WINDOW_H-0)/2,(WINDOW_H+120)/2,4,(WINDOW_H-120)/2);
 
 	//DrawRectangle(WINDOW_W-20,scy0,5,2.0*sqrt((double)FEEL)*sc_y*(double)N);
 
@@ -601,6 +602,8 @@ void RunRobot(long t,int my_r,struct Robot *robot) {
 	robot->p_xo=robot->p_x;
 	robot->p_yo=robot->p_y;
 
+  // First one is defines the hole in the walls. 0.5 is the center y. if we are within 0.1 of it we can go through. 
+  // The other part is for defining where this hole is in the x-axis.
 	robot->p_x+=sp*robot->v_x;
 	if ((fabs(robot->p_y-0.5)>0.1)&&(((robot->p_xo<0.52)&&(robot->p_x>0.48))||((robot->p_xo>0.52)&&(robot->p_x<0.48))))
 	robot->p_x=robot->p_xo;

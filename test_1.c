@@ -174,14 +174,15 @@ void NetDisplay() {
     Color(GREEN);
     DrawRectangle(1,1,WINDOW_H-1,WINDOW_H-2);
 
+    // The right one
     Color(RED);
-    DrawRectangle((WINDOW_H+177)/2,1,4,(WINDOW_H-120)/2);
-    DrawRectangle((WINDOW_H+177)/2,(WINDOW_H+120)/2,4,(WINDOW_H-124)/2);
+    DrawRectangle((WINDOW_H*2)/3,1,4,(WINDOW_H-120)/2);
+    DrawRectangle((WINDOW_H*2)/3,(WINDOW_H+120)/2,4,(WINDOW_H-120)/2);
 
-
+    // The left one
     Color(RED);
-    DrawRectangle((WINDOW_H-177)/2,1,4,(WINDOW_H-120)/2);
-    DrawRectangle((WINDOW_H-177)/2,(WINDOW_H+120)/2,4,(WINDOW_H-124)/2);
+    DrawRectangle((WINDOW_H)/3,1,4,(WINDOW_H-120)/2);
+    DrawRectangle((WINDOW_H)/3,(WINDOW_H+120)/2,4,(WINDOW_H-120)/2);
       
 
     //DrawRectangle(WINDOW_W-20,scy0,5,2.0*sqrt((double)FEEL)*sc_y*(double)N);
@@ -584,12 +585,14 @@ void RunRobot(int my_r,struct Robot *robot) {
   /********************************************************************/
   for (r=0;r<NR;r++) {
     rg=(int)(drand48()*(double)NR);
-    if ((robots[rg]->p_x<0.33)&&(robot->p_x>0.33)) {
+    if ((robots[rg]->p_x>0.66)&&(robot->p_x<0.66)) {
       robot->gbx=robots[rg]->p_x;
       robot->gby=robots[rg]->p_y;
       break;
-    }
-    else {
+    } else if ((robots[rg]->p_x<0.33)&&(robot->p_x<0.33)) {
+      robot->gbx=robots[rg]->p_x;
+      robot->gby=robots[rg]->p_y;
+    } else {
       robot->gbx=robot->p_x;
       robot->gby=robot->p_y;
     }
@@ -634,9 +637,14 @@ void RunRobot(int my_r,struct Robot *robot) {
   robot->p_yo=robot->p_y;
 
   robot->p_x+=sp*robot->v_x;
-  if ((fabs(robot->p_y-0.5)>0.1)&&(((robot->p_xo<0.32)&&(robot->p_x>0.38))||((robot->p_xo>0.32)&&(robot->p_x<0.38))))
-  robot->p_x=robot->p_xo;
+  if ((fabs(robot->p_y-0.5)>0.1)&&(((robot->p_xo<0.36)&&(robot->p_x>0.30))||((robot->p_xo>0.36)&&(robot->p_x<0.30)))) {
+  robot->p_x=robot->p_xo; 
+  }
+  if ((fabs(robot->p_y-0.5)>0.1)&&(((robot->p_xo>0.63)&&(robot->p_x<0.69))||((robot->p_xo<0.63)&&(robot->p_x>0.69)))) {
+  robot->p_x=robot->p_xo; 
+  }
   robot->p_y+=sp*robot->v_y;
+
 
   oo=0;
   for (r=0;r<NR;r++) {
