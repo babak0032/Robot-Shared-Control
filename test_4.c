@@ -22,7 +22,7 @@
 
 #define DISTY   2   /* 0 trajectory, 1 part of trajectory, 2 moving */
 
-#define NR 40      /* number of robots */
+#define NR 90      /* number of robots */
 #define L 10        /* number of positions: 0: center, 1: wall, 2: corner*/
 #define TT0 40000000L
 #define TM 46000000L /* Seems like the amount of run time which will terminate the graphics */
@@ -175,9 +175,9 @@ void NetDisplay() {
     DrawRectangle(1,1,WINDOW_H-1,WINDOW_H-2);
 
     Color(RED);
-    DrawRectangle((WINDOW_H)/3,(WINDOW_H)/3,(WINDOW_H)/3,4);   // horizontal 
-    DrawRectangle((WINDOW_H)/3,1,4,(WINDOW_H)/3); // vertical
-    DrawRectangle((WINDOW_H*2)/3,1,4,(WINDOW_H)/3); // vertical 
+    DrawRectangle((WINDOW_H)/3,(WINDOW_H-30)/3,(WINDOW_H)/3,4);   // horizontal 
+    DrawRectangle((WINDOW_H)/3,1,4,(WINDOW_H-30)/3); // vertical
+    DrawRectangle((WINDOW_H*2)/3,1,4,(WINDOW_H-30)/3); // vertical 
 
     Color(RED);
     DrawRectangle((WINDOW_H)/3,(WINDOW_H*2)/3,(WINDOW_H)/3,4);   // horizontal 
@@ -568,8 +568,8 @@ void InitRobot(int r,struct Robot *robot) {
     robot->gby=robot->p_y;
 
   //Update Robot position
-    robot->p_x=0.5+0.25*(robot->p_x-1.99);
-    robot->p_y=0.5+0.5*(robot->p_y-0.5);
+    robot->p_x=0.5+0.25*(robot->p_x-1.9);
+    robot->p_y=0.5+0.75*(robot->p_y-0.5);
 }
 
 
@@ -584,7 +584,7 @@ void RunRobot(int my_r,struct Robot *robot) {
   /********************************************************************/
   for (r=0;r<NR;r++) {
     rg=(int)(drand48()*(double)NR);
-    if (((robots[rg]->p_x<0.33) && (robots[rg]->p_y>0.6)) && ((robot->p_x>0.33) || (robot->p_y<0.6))) {
+    if ((robots[rg]->p_x>0.66) && (robot->p_x<0.66)) {
       robot->gbx=robots[rg]->p_x;
       robot->gby=robots[rg]->p_y;
       break;
@@ -634,29 +634,22 @@ void RunRobot(int my_r,struct Robot *robot) {
   robot->p_yo=robot->p_y;
 
   robot->p_x+=sp*robot->v_x;
-  if ((fabs(robot->p_y-0.5)<0.1)&&(((robot->p_xo<0.37)&&(robot->p_x>0.29))||((robot->p_xo>0.37)&&(robot->p_x<0.29)))) {
+  if ((fabs(robot->p_y-0.5)>0.169)&&(((robot->p_xo<0.35)&&(robot->p_x>0.31))||((robot->p_xo>0.35)&&(robot->p_x<0.31)))) {
   robot->p_x=robot->p_xo;
-  robot->p_y+=sp*robot->v_y;
-  } 
-  robot->p_y+=sp*robot->v_y;
-  if ((fabs(robot->p_x-0.5)<0.1)&&(((robot->p_yo<0.70)&&(robot->p_y>0.62))||((robot->p_yo>0.70)&&(robot->p_y<0.62)))) {
-  robot->p_y=robot->p_yo;
-  robot->p_x+=sp*robot->v_x; 
   }
-  robot->p_y-=sp*robot->v_y;
-  if ((fabs(robot->p_x-0.5)<0.1)&&(((robot->p_yo<0.37)&&(robot->p_y>0.29))||((robot->p_yo>0.37)&&(robot->p_y<0.29)))) {
-  robot->p_y=robot->p_yo;
-  robot->p_x-=sp*robot->v_x;
-  }
-  robot->p_x-=sp*robot->v_x;
-  if ((fabs(robot->p_y-0.5)<0.1)&&(((robot->p_xo<0.70)&&(robot->p_x>0.62))||((robot->p_xo>0.70)&&(robot->p_x<0.62)))) {
+  if ((fabs(robot->p_y-0.5)>0.169)&&(((robot->p_xo<0.69)&&(robot->p_x>0.63))||((robot->p_xo>0.69)&&(robot->p_x<0.63)))) {
   robot->p_x=robot->p_xo;
-  robot->p_y-=sp*robot->v_y;
   } 
-  // } else if ((fabs(robot->p_y-0.5)<0.1)&&(((robot->p_xo<0.70)&&(robot->p_x>0.62))||((robot->p_xo>0.70)&&(robot->p_x<0.62)))) {
-  // robot->p_x=robot->p_xo;
-  // robot->p_y+=sp*robot->v_y;
-  // }
+
+
+  robot->p_y+=sp*robot->v_y;
+  if ((fabs(robot->p_x-0.5)<0.169)&&(((robot->p_yo<0.69)&&(robot->p_y>0.63))||((robot->p_yo>0.69)&&(robot->p_y<0.63)))) {
+  robot->p_y=robot->p_yo; 
+  }
+  if ((fabs(robot->p_x-0.5)<0.169)&&(((robot->p_yo<0.35)&&(robot->p_y>0.31))||((robot->p_yo>0.35)&&(robot->p_y<0.31)))) {
+  robot->p_y=robot->p_yo;
+  }
+
 
   oo=0;
   for (r=0;r<NR;r++) {

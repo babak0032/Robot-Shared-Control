@@ -175,9 +175,9 @@ void NetDisplay() {
     DrawRectangle(1,1,WINDOW_H-1,WINDOW_H-2);
 
     Color(RED);
-    DrawRectangle((WINDOW_H)/3,(WINDOW_H)/2,(WINDOW_H)/3,4);   // horizontal 
-    DrawRectangle((WINDOW_H)/3,1,4,(WINDOW_H)/2); // vertical
-    DrawRectangle((WINDOW_H*2)/3,1,4,(WINDOW_H)/2); // vertical 
+    DrawRectangle((WINDOW_H)/3,(WINDOW_H-20)/2,(WINDOW_H)/3,4);   // horizontal 
+    DrawRectangle((WINDOW_H)/3,1,4,(WINDOW_H-20)/2); // vertical
+    DrawRectangle((WINDOW_H*2)/3,1,4,(WINDOW_H-20)/2); // vertical 
 
     Color(YELLOW);
     DrawRectangle(((WINDOW_H+6)*2)/3,1,(WINDOW_H-14)/3,(WINDOW_H)/2);
@@ -627,15 +627,18 @@ void RunRobot(int my_r,struct Robot *robot) {
   if ((fabs(robot->p_y-0.0)<0.5)&&(((robot->p_xo>0.3)&&(robot->p_x<0.36))||((robot->p_xo<0.3)&&(robot->p_x>0.36)))) {
   robot->p_x=robot->p_xo;
   } 
+  if ((fabs(robot->p_y-0.0)<0.5)&&(((robot->p_xo<0.62)&&(robot->p_x>0.66))||((robot->p_xo>0.62)&&(robot->p_x<0.66)))) {
+  robot->p_x=robot->p_xo;
+  } 
   if ((fabs(robot->p_y-0.0)<0.5)&&(((robot->p_xo<0.66)&&(robot->p_x>0.62))||((robot->p_xo>0.66)&&(robot->p_x<0.62)))) {
   robot->p_x=robot->p_xo;
   } 
 
   robot->p_y+=sp*robot->v_y;
-  if ((fabs(robot->p_x-0.5)<0.186)&&(((robot->p_yo>0.46)&&(robot->p_y<0.54))||((robot->p_yo<0.46)&&(robot->p_y>0.54)))) {
+  if ((fabs(robot->p_x-0.5)<0.167)&&(((robot->p_yo>0.48)&&(robot->p_y<0.52))||((robot->p_yo<0.48)&&(robot->p_y>0.52)))) {
   robot->p_y=robot->p_yo; 
   }
-  if ((fabs(robot->p_x-0.5)<0.186)&&(((robot->p_yo<0.52)&&(robot->p_y>0.48))||((robot->p_yo>0.52)&&(robot->p_y<0.48)))) {
+  if ((fabs(robot->p_x-0.5)<0.167)&&(((robot->p_yo<0.52)&&(robot->p_y>0.48))||((robot->p_yo>0.52)&&(robot->p_y<0.48)))) {
   robot->p_y=robot->p_yo; 
   }
 
