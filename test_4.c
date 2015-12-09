@@ -24,8 +24,8 @@
 
 #define NR 90      /* number of robots */
 #define L 10        /* number of positions: 0: center, 1: wall, 2: corner*/
-#define TT0 40000000L
-#define TM 46000000L /* Seems like the amount of run time which will terminate the graphics */
+#define TT0 4000L
+#define TM 4600L /* Seems like the amount of run time which will terminate the graphics */
 #define TRUE    1
 #define FALSE   0
 
@@ -719,7 +719,7 @@ int main() {
         robots[r] = (struct Robot *)malloc(sizeof(struct Robot));
     }
 
-    /*InitFiles();*/
+    InitFiles();
     InitGlobal();
 
     for (r=0;r<NR;r++) {
@@ -753,9 +753,10 @@ int main() {
 
                 for (r=0;r<NR;r++) {
                     RunRobot(r,robots[r]);
+                    EvalRobot(t,r,robots[r]);
                 }
                 t++;
-                if (t>TM) {
+                if (t>TM) { 
 #if GRAPHICS
                     CloseGraphics();
 #endif
