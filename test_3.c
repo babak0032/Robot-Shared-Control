@@ -627,10 +627,7 @@ void RunRobot(int my_r,struct Robot *robot) {
   if ((fabs(robot->p_y-0.0)<0.5)&&(((robot->p_xo>0.3)&&(robot->p_x<0.36))||((robot->p_xo<0.3)&&(robot->p_x>0.36)))) {
   robot->p_x=robot->p_xo;
   } 
-  if ((fabs(robot->p_y-0.0)<0.5)&&(((robot->p_xo<0.62)&&(robot->p_x>0.66))||((robot->p_xo>0.62)&&(robot->p_x<0.66)))) {
-  robot->p_x=robot->p_xo;
-  } 
-  if ((fabs(robot->p_y-0.0)<0.5)&&(((robot->p_xo<0.66)&&(robot->p_x>0.62))||((robot->p_xo>0.66)&&(robot->p_x<0.62)))) {
+  if ((fabs(robot->p_y-0.0)<0.5)&&(((robot->p_xo<0.69)&&(robot->p_x>0.64))||((robot->p_xo>0.69)&&(robot->p_x<0.64)))) {
   robot->p_x=robot->p_xo;
   } 
 

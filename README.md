@@ -67,8 +67,9 @@ sp=0.0001;
 1) How the robot moves?
 
 update velocity:
-robot->v_x=w*robot->v_x+a1*drand48()*(robot->pbx-robot->p_x)+a2*drand48()*(robot->gbx-robot->p_x); //+ac*(robot->p_x-robots[mrad]->p_x)/(radmin+0.0001);
-robot->v_y=w*robot->v_y+a1*drand48()*(robot->pby-robot->p_y)+a2*drand48()*(robot->gby-robot->p_y); //+ac*(robot->p_y-robots[mrad]->p_y)/(radmin+0.0001);
+
+	robot->v_x=w*robot->v_x+a1*drand48()*(robot->pbx-robot->p_x)+a2*drand48()*(robot->gbx-robot->p_x); //+ac*(robot->p_x-robots[mrad]->p_x)/(radmin+0.0001);
+	robot->v_y=w*robot->v_y+a1*drand48()*(robot->pby-robot->p_y)+a2*drand48()*(robot->gby-robot->p_y); //+ac*(robot->p_y-robots[mrad]->p_y)/(radmin+0.0001);
 
 V_x = w*V_x + a1*(random)*(P_x - x) + a2*(random)*(G_x - x) + a3*(x - R_x)/(radmin+0.0001)
 V_y = w*V_y + a1*(random)*(P_y - y) + a2*(random)*(G_y - y) + a3*(y - R_y)/(radmin+0.0001)

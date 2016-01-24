@@ -24,8 +24,8 @@
 
 #define NR 100      /* number of robots */
 #define L 10        /* number of positions: 0: center, 1: wall, 2: corner*/
-#define TT0 40000000L
-#define TM 46000000L /* Seems like the amount of run time which will terminate the graphics */
+#define TT0 14000L /* Start evaluating after this time */
+#define TM 15000L /* Seems like the amount of run time which will terminate the graphics */
 #define TRUE    1
 #define FALSE   0
 
@@ -675,8 +675,8 @@ void InitFiles() {
     for (r=0;r<NR;r++) {
         sprintf(ffn,"pf%d",r);
         if((pf[r]=fopen(ffn,"wt"))==NULL) printf("couldn't open output file\n");
-        sprintf(ffn,"mf%d",r);
-        if((mf[r]=fopen(ffn,"wt"))==NULL) printf("couldn't open output file\n");
+        /*sprintf(ffn,"mf%d",r);
+        if((mf[r]=fopen(ffn,"wt"))==NULL) printf("couldn't open output file\n");*/
     }
 }
 
@@ -714,7 +714,7 @@ int main() {
         robots[r] = (struct Robot *)malloc(sizeof(struct Robot));
     }
 
-    /*InitFiles();*/
+    InitFiles();
     InitGlobal();
 
     for (r=0;r<NR;r++) {
@@ -748,6 +748,7 @@ int main() {
 
                 for (r=0;r<NR;r++) {
                     RunRobot(r,robots[r]);
+                    EvalRobot(t,r,robots[r]);
                 }
                 t++;
                 if (t>TM) {
